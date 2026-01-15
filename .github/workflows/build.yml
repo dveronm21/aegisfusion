@@ -1,0 +1,65 @@
+name: Build and Test
+
+on: [push, pull_request]
+
+jobs:
+  build-core:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      
+      - name: Build Core
+        run: |
+          cd core
+          cargo build --release
+          cargo test
+
+  build-driver:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup WDK
+        uses: microsoft/setup-wdk@v1
+        
+      - name: Build Driver
+        run: |
+          cd kernel/windows
+          cmake -B build
+          cmake --build build
+
+  build-ml:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      - name: Install dependencies
+        run: |
+          cd ml
+          pip install -r requirements.txt
+          
+      - name: Test models
+        run: |
+          cd ml/models
+          python -m pytest tests/
+
+  build-ui:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          
+      - name: Build UI
+        run: |
+          cd ui
+          npm ci
+          npm run build
+          npm run electron:build

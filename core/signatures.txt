@@ -1,0 +1,8 @@
+# One SHA-256 hash per line. Lines starting with # are ignored.
+# EICAR test file (safe, standard AV test signature)
+275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f
+# EICAR variants with newline endings
+131f95c51cc819465fa1797f6ccacf9d494aaaff46fa3eac73ae63ffbdfd8267
+8b3f191819931d1f2cef7289239b5f77c00b079847b9c2636e56854d1e5eff71
+# Aegis test signature (benign). Content: "AEGIS_TEST_SIGNATURE_2026" (ASCII)
+47fecb84a360203813e56ab3a1fdfa824e415c1c785eab90abbe26219863e0e1

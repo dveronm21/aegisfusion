@@ -1,0 +1,33 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+*.tmp
+
+# Rust
+**/target/
+
+# Node
+**/node_modules/
+**/dist/
+**/build/
+**/.vite/
+**/.turbo/
+
+# Go
+**/bin/
+**/pkg/
+
+# Python
+**/__pycache__/
+*.pyc
+
+# IDE
+.idea/
+.vscode/
+
+# Env
+.env
+.env.*

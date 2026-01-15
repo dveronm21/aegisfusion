@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "bias": -2.0,
+  "weights": {
+    "ext_exe": 0.5,
+    "ext_script": 0.8,
+    "ext_doc": 0.35,
+    "ext_archive": 0.2,
+    "path_suspicious": 0.6,
+    "name_double_ext": 0.9,
+    "name_hidden": 0.2,
+    "name_keyword": 0.7,
+    "size_log": 0.1,
+    "is_pe": 0.3,
+    "entropy": 0.08,
+    "entropy_high": 0.5,
+    "yara_match_count": 0.7,
+    "suspicious_string_count": 0.25,
+    "has_powershell": 0.6,
+    "has_cmd": 0.4,
+    "has_base64": 0.5,
+    "has_downloadstring": 0.55,
+    "has_injection": 0.6,
+    "has_rundll32": 0.4,
+    "has_schtasks": 0.4,
+    "contains_url": 0.3
+  }
+}

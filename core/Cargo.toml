@@ -1,0 +1,50 @@
+[package]
+name = "aegis-fusion-core"
+version = "1.0.0"
+edition = "2021"
+authors = ["Aegis Team"]
+
+[dependencies]
+tokio = { version = "1.35", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+axum = "0.7"
+tower-http = { version = "0.5", features = ["cors"] }
+sysinfo = "0.30"
+walkdir = "2.5"
+zip = "0.6.6"
+sha2 = "0.10"
+protobuf = "3.3"
+onnxruntime = "0.0.14"
+yara-x = "1.11.0"
+windows = { version = "0.52", features = ["Win32_System_Threading", "Win32_Foundation"] }
+libc = "0.2"
+crossbeam = "0.8"
+parking_lot = "0.12"
+dashmap = "5.5"
+bloomfilter = "1.0"
+log = "0.4"
+env_logger = "0.11"
+reqwest = { version = "0.11", features = ["json"] }
+
+[target.'cfg(windows)'.dependencies]
+winapi = { version = "0.3", features = [
+  "winnt",
+  "processthreadsapi",
+  "fileapi",
+  "handleapi",
+  "ioapiset",
+  "winbase",
+  "winerror",
+  "minwindef"
+] }
+windows-service = "0.6"
+
+[target.'cfg(unix)'.dependencies]
+nix = "0.27"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true

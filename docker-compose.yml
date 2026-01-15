@@ -1,0 +1,100 @@
+version: '3.8'
+
+services:
+  api-gateway:
+    build: ./cloud/api
+    ports:
+      - "8081:8081"
+    environment:
+      - PORT=8081
+      - DB_HOST=postgres
+      - REDIS_HOST=redis
+      - AEGIS_CORS_ORIGIN=http://localhost:5173,http://127.0.0.1:5173
+      - AEGIS_MAX_UPLOAD_MB=50
+      - AEGIS_ANALYSIS_CONCURRENCY=4
+      - AEGIS_UPLOAD_DIR=/app/uploads
+      - AEGIS_ANALYSIS_MODE=sandbox
+      - AEGIS_API_KEYS=WGzOYOAJ5j8bEzxiYIITi6TfhbI5JGOPIBEnS9RmRRc=
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./data/uploads:/app/uploads
+
+  sandbox-manager:
+    build: ./cloud/sandbox
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./data/uploads:/app/uploads
+      - ./data/sandbox_reports:/app/reports
+    environment:
+      - SANDBOX_UPLOAD_DIR=/app/uploads
+      - SANDBOX_REPORT_DIR=/app/reports
+      - SANDBOX_API_URL=http://api-gateway:8081
+      - SANDBOX_API_KEY=WGzOYOAJ5j8bEzxiYIITi6TfhbI5JGOPIBEnS9RmRRc=
+      - SANDBOX_POLL_MS=2000
+      - SANDBOX_WORKERS=2
+      - SANDBOX_MIN_AGE_SEC=2
+      - SANDBOX_MAX_READ_MB=4
+    depends_on:
+      - api-gateway
+
+  ml-trainer:
+    build: ./ml/training
+    runtime: nvidia
+    volumes:
+      - ./data:/data
+      - ./models:/models
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+
+  threat-intel:
+    build: ./cloud/threat_intel
+    ports:
+      - "9090:9090"
+    environment:
+      - KAFKA_BROKERS=kafka:9092
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: aegis
+      POSTGRES_USER: aegis
+      POSTGRES_PASSWORD: secure_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.3
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  elasticsearch:
+    image: elasticsearch:8.11.3
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.3
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+volumes:
+  postgres_data:
+  es_data:

@@ -1,0 +1,12 @@
+{
+  "file_hash": "8804fb4b3f645f0bee509c2e46ef91d4774b7f9a23c85e721175d43289911b18",
+  "is_malicious": true,
+  "confidence": 0.85,
+  "threat_type": "Suspicious",
+  "score": 0.85,
+  "indicators": [
+    "Contains string: ransomware"
+  ],
+  "analyzed_at": "2026-01-09T15:44:36.355387Z",
+  "scan_time_ms": 1
+}
