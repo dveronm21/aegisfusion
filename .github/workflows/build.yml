@@ -23,10 +23,20 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
     steps:
       - uses: actions/checkout@v4
-      - name: Setup WDK
-        uses: microsoft/setup-wdk@v1
-        
+      - name: Detect WDK
+        id: wdk
+        shell: pwsh
+        run: |
+          $wdk = "C:\Program Files (x86)\Windows Kits\10"
+          if (Test-Path $wdk) {
+            "available=true" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          } else {
+            "available=false" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+            Write-Host "WDK not found. Skipping driver build."
+          }
+
       - name: Build Driver
+        if: steps.wdk.outputs.available == 'true'
         run: |
           cd kernel/windows
           cmake -B build
