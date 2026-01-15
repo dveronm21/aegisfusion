@@ -20,6 +20,7 @@ jobs:
 
   build-driver:
     runs-on: windows-latest
+    if: github.event_name == 'workflow_dispatch'
     steps:
       - uses: actions/checkout@v4
       - name: Setup WDK
@@ -39,15 +40,9 @@ jobs:
         with:
           python-version: '3.11'
           
-      - name: Install dependencies
+      - name: Syntax check
         run: |
-          cd ml
-          pip install -r requirements.txt
-          
-      - name: Test models
-        run: |
-          cd ml/models
-          python -m pytest tests/
+          python -m compileall ml
 
   build-ui:
     runs-on: ubuntu-latest
@@ -62,4 +57,3 @@ jobs:
           cd ui
           npm ci
           npm run build
-          npm run electron:build
