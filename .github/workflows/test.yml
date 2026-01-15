@@ -1,1 +1,11 @@
-# TODO: define test workflow
+name: Tests
+
+on:
+  workflow_dispatch:
+
+jobs:
+  placeholder:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Placeholder
+        run: echo "Test workflow placeholder"
