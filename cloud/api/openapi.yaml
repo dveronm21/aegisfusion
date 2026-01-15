@@ -1,0 +1,345 @@
+openapi: 3.0.3
+info:
+  title: Aegis Fusion Cloud API
+  version: 1.0.0
+  description: Public API for samples, reputation, analysis, and telemetry.
+servers:
+  - url: http://localhost:8081
+security:
+  - ApiKeyAuth: []
+  - BearerAuth: []
+
+paths:
+  /health:
+    get:
+      summary: Health check
+      security: []
+      responses:
+        "200":
+          description: Service status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  service:
+                    type: string
+                  version:
+                    type: string
+                  timestamp:
+                    type: string
+                    format: date-time
+                  uptime:
+                    type: string
+
+  /api/v1/upload:
+    post:
+      summary: Upload a sample for analysis
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - client_id
+                - file
+              properties:
+                client_id:
+                  type: string
+                process_name:
+                  type: string
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Accepted sample
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  file_hash:
+                    type: string
+                  file_size:
+                    type: integer
+                    format: int64
+                  message:
+                    type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /api/v1/reputation:
+    post:
+      summary: Query reputation by hash
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReputationQuery"
+      responses:
+        "200":
+          description: Reputation response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReputationResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /api/v1/analysis/{hash}:
+    get:
+      summary: Get analysis result by hash
+      parameters:
+        - name: hash
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Analysis result or pending state
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/AnalysisResult"
+                  - $ref: "#/components/schemas/PendingResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /api/v1/analysis/result:
+    post:
+      summary: Submit analysis result
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnalysisResult"
+      responses:
+        "202":
+          description: Stored
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /api/v1/threat-intel:
+    get:
+      summary: Threat intel update
+      responses:
+        "200":
+          description: Threat intel payload
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ThreatIntelUpdate"
+
+  /api/v1/stats:
+    get:
+      summary: Service stats
+      responses:
+        "200":
+          description: Stats payload
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StatsResponse"
+
+  /api/v1/events:
+    post:
+      summary: Ingest endpoint events
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventPayload"
+      responses:
+        "202":
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    BearerAuth:
+      type: http
+      scheme: bearer
+
+  responses:
+    BadRequest:
+      description: Invalid request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+
+    ReputationQuery:
+      type: object
+      required:
+        - hash
+      properties:
+        hash:
+          type: string
+
+    ReputationResponse:
+      type: object
+      properties:
+        hash:
+          type: string
+        reputation:
+          type: string
+        score:
+          type: number
+          format: float
+        prevalence:
+          type: integer
+          format: int64
+        first_seen:
+          type: string
+          format: date-time
+        last_seen:
+          type: string
+          format: date-time
+        threat_names:
+          type: array
+          items:
+            type: string
+
+    AnalysisResult:
+      type: object
+      required:
+        - file_hash
+        - is_malicious
+        - confidence
+      properties:
+        file_hash:
+          type: string
+        is_malicious:
+          type: boolean
+        confidence:
+          type: number
+          format: float
+        threat_type:
+          type: string
+        score:
+          type: number
+          format: float
+        indicators:
+          type: array
+          items:
+            type: string
+        analyzed_at:
+          type: string
+          format: date-time
+        scan_time_ms:
+          type: integer
+          format: int64
+
+    PendingResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+
+    ThreatIntelUpdate:
+      type: object
+      properties:
+        update_id:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: integer
+        malicious_hashes:
+          type: array
+          items:
+            type: string
+        malicious_ips:
+          type: array
+          items:
+            type: string
+        malicious_domains:
+          type: array
+          items:
+            type: string
+        yara_rules:
+          type: array
+          items:
+            type: string
+
+    StatsResponse:
+      type: object
+      properties:
+        total_submissions:
+          type: integer
+        total_analyzed:
+          type: integer
+        queue_size:
+          type: integer
+        known_threats:
+          type: integer
+        known_clean:
+          type: integer
+        unknown_files:
+          type: integer
+        database_size:
+          type: integer
+        events_received:
+          type: integer
+        uptime:
+          type: string
+
+    EventPayload:
+      type: object
+      required:
+        - client_id
+        - event
+      properties:
+        client_id:
+          type: string
+        event:
+          type: object
+          additionalProperties: true

@@ -4,6 +4,34 @@ Documento tecnico de referencia para evolucionar Aegis Fusion como producto
 EDR/AV moderno con driver + agente + cloud + UI. Esta guia prioriza contratos
 claros, seguridad end-to-end, operacion confiable y explicabilidad.
 
+## 0) Diagrama de alto nivel
+
+```mermaid
+flowchart LR
+  subgraph Kernel
+    D[Driver]
+  end
+  subgraph Agent
+    A[Core Agent]
+    S[Local Store]
+  end
+  subgraph Cloud
+    C[Cloud API]
+    P[Policy/Jobs]
+    I[Threat Intel]
+  end
+  subgraph UI
+    U[Dashboard]
+  end
+  D -->|events| A
+  A -->|telemetry| C
+  C -->|policies| A
+  A -->|status| U
+  C -->|alerts| U
+  A <--> S
+  C <--> I
+```
+
 ## 1) Contratos por capa (event contract versionado)
 
 ### Principio
@@ -15,7 +43,8 @@ politicas.
 ### Contrato de evento
 
 Contrato versionado y estable entre driver -> agente -> cloud. Recomendado:
-protobuf (u otra serializacion estricta) con version de schema.
+protobuf (u otra serializacion estricta) con version de schema. Los tipos
+compartidos deben vivir en `common/` y versionarse junto al codigo.
 
 Campos minimos:
 - event_id: u64
@@ -87,7 +116,40 @@ Objetivo: evitar un dashboard sin controles fuertes de identidad.
 - Identidad de device con claves protegidas (TPM si existe).
 - Token de sesion con TTL corto.
 
-## 3) Update pipeline serio
+## 3) Flujos clave
+
+### Telemetria y decision local
+
+1) Driver emite eventos de proceso/archivo/red.
+2) Agente enriquece (hash, path, user).
+3) Motor de reglas y ML determina el riesgo.
+4) Se aplica accion local (monitor/quarantine/block).
+5) Se sube evidencia a cloud si aplica.
+
+### Subida de muestra
+
+1) Agente envia archivo a `/api/v1/upload`.
+2) Cloud encola analisis.
+3) Sandbox o analisis interno produce resultado.
+4) Cloud actualiza reputacion.
+5) Agente recibe verdict y actualiza cache local.
+
+### Politicas
+
+1) Cloud genera policy por grupo.
+2) Agente descarga y valida firma.
+3) Se aplican cambios y se guarda estado.
+
+## 4) Modelo de amenazas (resumen)
+
+- Spoofing: identidad de endpoint -> mTLS + device keys.
+- Tampering: eventos y policies -> firma, hash, validacion estricta.
+- Repudiation: acciones -> audit log inmutable.
+- Information disclosure: datos sensibles -> cifrado en transito y reposo.
+- Denial of service: rate limit, backoff, colas y limites de tamano.
+- Elevation of privilege: driver minimo, surface reducida, hardening.
+
+## 5) Update pipeline serio
 
 Requisitos minimos:
 - Canales: stable / beta / canary.
@@ -99,7 +161,7 @@ Datos por version:
 - hash, firma, notas, riesgos conocidos.
 - compatibilidad con esquema de eventos.
 
-## 4) Windows driver: supervivencia y firma
+## 6) Windows driver: supervivencia y firma
 
 Problema: sin firma, no hay escala.
 
@@ -110,7 +172,7 @@ Checklist:
 - Feature flags para activar/desactivar rutas sensibles.
 - Modo userland si driver no esta listo.
 
-## 5) ML: que sume, no que rompa
+## 7) ML: que sume, no que rompa
 
 Reglas:
 - Feature extraction determinista.
@@ -122,7 +184,7 @@ Se recomienda:
 - Threshold ajustable en policy.
 - Registro de la razon (features, score, rule id).
 
-## 6) Manejo de muestras y tests
+## 8) Manejo de muestras y tests
 
 No subir muestras reales sin control.
 Si se requieren:
@@ -130,14 +192,14 @@ Si se requieren:
 - CI nunca debe ejecutarlas.
 - preferir hashes/IOCs y simuladores benignos.
 
-## 7) Observabilidad y confiabilidad
+## 9) Observabilidad y confiabilidad
 
 - Logs con niveles y rotacion.
 - Telemetria de performance: CPU, RAM, latencias.
 - Alertas de salud (agent down, driver down, cloud unreachable).
 - Modo offline (buffer y reintento).
 
-## 8) Roadmap tecnico sugerido
+## 10) Roadmap tecnico sugerido
 
 1) Contrato versionado de eventos.
 2) mTLS y device identity.

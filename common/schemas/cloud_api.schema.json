@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Aegis Fusion Cloud API Types",
+  "type": "object",
+  "definitions": {
+    "ErrorResponse": {
+      "type": "object",
+      "properties": {
+        "error": { "type": "string" }
+      },
+      "required": ["error"]
+    },
+    "ReputationQuery": {
+      "type": "object",
+      "properties": {
+        "hash": { "type": "string" }
+      },
+      "required": ["hash"]
+    },
+    "ReputationResponse": {
+      "type": "object",
+      "properties": {
+        "hash": { "type": "string" },
+        "reputation": { "type": "string" },
+        "score": { "type": "number" },
+        "prevalence": { "type": "integer" },
+        "first_seen": { "type": "string", "format": "date-time" },
+        "last_seen": { "type": "string", "format": "date-time" },
+        "threat_names": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "AnalysisResult": {
+      "type": "object",
+      "properties": {
+        "file_hash": { "type": "string" },
+        "is_malicious": { "type": "boolean" },
+        "confidence": { "type": "number" },
+        "threat_type": { "type": "string" },
+        "score": { "type": "number" },
+        "indicators": { "type": "array", "items": { "type": "string" } },
+        "analyzed_at": { "type": "string", "format": "date-time" },
+        "scan_time_ms": { "type": "integer" }
+      },
+      "required": ["file_hash", "is_malicious", "confidence"]
+    },
+    "ThreatIntelUpdate": {
+      "type": "object",
+      "properties": {
+        "update_id": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "version": { "type": "integer" },
+        "malicious_hashes": { "type": "array", "items": { "type": "string" } },
+        "malicious_ips": { "type": "array", "items": { "type": "string" } },
+        "malicious_domains": { "type": "array", "items": { "type": "string" } },
+        "yara_rules": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "StatsResponse": {
+      "type": "object",
+      "properties": {
+        "total_submissions": { "type": "integer" },
+        "total_analyzed": { "type": "integer" },
+        "queue_size": { "type": "integer" },
+        "known_threats": { "type": "integer" },
+        "known_clean": { "type": "integer" },
+        "unknown_files": { "type": "integer" },
+        "database_size": { "type": "integer" },
+        "events_received": { "type": "integer" },
+        "uptime": { "type": "string" }
+      }
+    },
+    "EventPayload": {
+      "type": "object",
+      "properties": {
+        "client_id": { "type": "string" },
+        "event": { "type": "object" }
+      },
+      "required": ["client_id", "event"]
+    }
+  }
+}

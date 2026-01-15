@@ -7,6 +7,12 @@ Next-generation endpoint protection stack with:
 
 Start here: `docs/INSTALL.md`
 
+Docs:
+- `docs/ARCHITECTURE.md`
+- `docs/LOCAL_DEV.md`
+- `docs/ROADMAP.md`
+- `cloud/api/openapi.yaml`
+
 ## Apoyo y patrocinio
 
 Buscamos apoyo para cubrir permisos y firmas digitales del driver. A quienes
