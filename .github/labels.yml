@@ -1,0 +1,36 @@
+- name: bug
+  color: d73a4a
+  description: Problema o error en el producto
+- name: enhancement
+  color: a2eeef
+  description: Mejora o nueva funcionalidad
+- name: documentation
+  color: 0075ca
+  description: Cambios en documentacion
+- name: security
+  color: b60205
+  description: Tema de seguridad o riesgo
+- name: question
+  color: d876e3
+  description: Pregunta o aclaracion
+- name: help wanted
+  color: 008672
+  description: Se necesita ayuda de la comunidad
+- name: good first issue
+  color: 7057ff
+  description: Ideal para primeros aportes
+- name: triage
+  color: fbca04
+  description: Pendiente de revision inicial
+- name: blocked
+  color: 000000
+  description: Bloqueado por dependencias
+- name: needs info
+  color: c2e0c6
+  description: Falta informacion para avanzar
+- name: wontfix
+  color: ffffff
+  description: No se planea resolver
+- name: duplicate
+  color: cfd3d7
+  description: Duplicado de otro issue
