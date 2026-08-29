@@ -2,135 +2,135 @@
 
 # 🛡️ Aegis Fusion
 
-### Endpoint security architecture for high-visibility, explainable detection
+### Arquitectura de seguridad para endpoints con detección explicable y alta visibilidad
 
-**Rust core · Go cloud API · React/TypeScript · Windows/Linux telemetry · ML-assisted detection**
+**Núcleo en Rust · API en Go · React/TypeScript · Telemetría Windows/Linux · Detección asistida por aprendizaje automático**
 
-[![Security](https://img.shields.io/badge/focus-endpoint%20security-0A66C2?style=for-the-badge)](#)
-[![Architecture](https://img.shields.io/badge/architecture-modular-111827?style=for-the-badge)](#architecture)
-[![Rust](https://img.shields.io/badge/core-Rust-000000?style=for-the-badge&logo=rust)](#technology-stack)
-[![Go](https://img.shields.io/badge/API-Go-00ADD8?style=for-the-badge&logo=go&logoColor=white)](#technology-stack)
-[![React](https://img.shields.io/badge/dashboard-React-61DAFB?style=for-the-badge&logo=react&logoColor=111827)](#technology-stack)
+[![Seguridad](https://img.shields.io/badge/enfoque-seguridad%20de%20endpoints-0A66C2?style=for-the-badge)](#)
+[![Arquitectura](https://img.shields.io/badge/arquitectura-modular-111827?style=for-the-badge)](#arquitectura)
+[![Rust](https://img.shields.io/badge/n%C3%BAcleo-Rust-000000?style=for-the-badge&logo=rust)](#tecnolog%C3%ADas)
+[![Go](https://img.shields.io/badge/API-Go-00ADD8?style=for-the-badge&logo=go&logoColor=white)](#tecnolog%C3%ADas)
+[![React](https://img.shields.io/badge/panel-React-61DAFB?style=for-the-badge&logo=react&logoColor=111827)](#tecnolog%C3%ADas)
 
-*A public architecture showcase for a broader endpoint-protection platform under active development.*
+*Proyecto público para mostrar la arquitectura y la evolución de una plataforma de protección de endpoints en desarrollo.*
 
 </div>
 
 ---
 
-## Why this project exists
+## ¿Por qué existe este proyecto?
 
-Aegis Fusion explores how an endpoint security platform can combine **deterministic security controls, low-level telemetry and machine-learning scoring** without turning detections into a black box.
+Aegis Fusion explora cómo construir una plataforma de seguridad para endpoints que combine **controles determinísticos, telemetría de bajo nivel y puntuación mediante modelos de aprendizaje automático**, sin convertir las detecciones en una caja negra.
 
-The design prioritizes:
+El diseño prioriza:
 
-- **Explainability** — alerts should expose the rule, score and signals behind the decision.
-- **Resilience** — endpoints must keep operating when cloud connectivity is unavailable.
-- **Strong device identity** — certificate-based endpoint identity and mTLS between components.
-- **Modularity** — endpoint, cloud, UI and analytics layers evolve independently.
-- **Security-first engineering** — rules remain the primary decision layer; ML augments rather than replaces them.
+- **Explicabilidad:** cada alerta debe mostrar qué regla, señal o puntaje llevó a tomar una decisión.
+- **Resiliencia:** el endpoint debe seguir funcionando aunque pierda conexión con la nube.
+- **Identidad fuerte del dispositivo:** certificados por equipo y comunicación mediante mTLS.
+- **Modularidad:** endpoint, nube, interfaz y analítica pueden evolucionar de forma independiente.
+- **Seguridad primero:** las reglas determinísticas son la base; el aprendizaje automático complementa, no reemplaza, esa lógica.
 
-## Architecture
+## Arquitectura
 
 ```text
 ┌───────────────────────────────────────────────────────────┐
-│                     UI Dashboard                          │
+│                   Panel de control                        │
 │                  React + TypeScript                       │
 └────────────────────────────┬──────────────────────────────┘
                              │
 ┌────────────────────────────▼──────────────────────────────┐
-│                       Cloud API                           │
+│                    API en la nube                         │
 │                         Go                                │
-│        Policies · Threat Intel · Jobs · Multi-tenant      │
+│        Políticas · Inteligencia · Tareas · Clientes       │
 └────────────────────────────┬──────────────────────────────┘
                              │ mTLS
 ┌────────────────────────────▼──────────────────────────────┐
-│                       Core Agent                          │
+│                    Agente principal                       │
 │                         Rust                              │
-│        Rules Engine · ML Inference · Local Buffer         │
+│       Motor de reglas · Inferencia ML · Búfer local       │
 └────────────────────────────┬──────────────────────────────┘
                              │
 ┌────────────────────────────▼──────────────────────────────┐
-│                    Kernel Telemetry                       │
+│                Telemetría de bajo nivel                   │
 │              Windows WDM / Linux LKM                      │
-│             Process · File · Network Events               │
+│          Procesos · Archivos · Eventos de red             │
 └───────────────────────────────────────────────────────────┘
 ```
 
-## Engineering highlights
+## Puntos fuertes de ingeniería
 
-| Capability | Design direction |
+| Capacidad | Enfoque |
 |---|---|
-| Behavioral detection | LSTM/CNN/Transformer-assisted scoring over endpoint telemetry |
-| Low-level visibility | Windows WDM and Linux LKM telemetry collection |
-| Deterministic controls | Rules-first detection pipeline |
-| Static inspection | YARA integration |
-| Device trust | Per-endpoint certificates and mTLS |
-| Offline operation | Local event buffering with retry and graceful degradation |
-| Detection transparency | Rule ID, score and contributing signals attached to alerts |
-| Cloud management | Policy, jobs and threat-intelligence services |
+| Detección de comportamiento | Puntuación asistida por LSTM, CNN y Transformer sobre telemetría del endpoint |
+| Visibilidad de bajo nivel | Recolección de eventos mediante Windows WDM y Linux LKM |
+| Controles determinísticos | Motor de reglas como primera capa de decisión |
+| Inspección estática | Integración con YARA |
+| Confianza del dispositivo | Certificados por endpoint y mTLS |
+| Operación sin conexión | Búfer local, reintentos y degradación controlada |
+| Detecciones explicables | Regla, puntaje y señales asociadas a cada alerta |
+| Gestión centralizada | Políticas, tareas e inteligencia de amenazas desde la nube |
 
-## Technology stack
+## Tecnologías
 
 ```text
-Endpoint Core      Rust
-Cloud API          Go
-Dashboard          React + TypeScript
-Windows telemetry  WDM
-Linux telemetry    LKM
-ML layer           LSTM / CNN / Transformer
-Signatures         YARA
-Transport          mTLS
-Orchestration      Docker Compose
+Núcleo del endpoint   Rust
+API en la nube        Go
+Panel web             React + TypeScript
+Telemetría Windows    WDM
+Telemetría Linux      LKM
+Capa de ML            LSTM / CNN / Transformer
+Firmas                 YARA
+Transporte seguro      mTLS
+Orquestación           Docker Compose
 ```
 
-## Security philosophy
+## Filosofía de seguridad
 
-> **Deterministic when possible. Probabilistic when useful. Explainable always.**
+> **Determinístico cuando se puede. Probabilístico cuando aporta valor. Explicable siempre.**
 
-Aegis Fusion intentionally separates collection, deterministic rules, enrichment and ML scoring. The goal is to make every detection traceable instead of relying on an opaque single-model verdict.
+Aegis Fusion separa deliberadamente la recolección de eventos, las reglas, el enriquecimiento y la puntuación mediante modelos. La idea es que cada detección pueda rastrearse y entenderse, en vez de depender de un único modelo opaco.
 
-## Repository map
+## Documentación del repositorio
 
-- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — technical architecture, contracts and threat model.
-- [`docs/ROADMAP.md`](docs/ROADMAP.md) — implementation roadmap and planned milestones.
-- Private core repository — implementation details, local development environment and internal components.
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — arquitectura técnica, contratos y modelo de amenazas.
+- [`docs/ROADMAP.md`](docs/ROADMAP.md) — evolución prevista del proyecto.
+- Repositorio privado del núcleo — implementación, entorno local y componentes internos.
 
-## Current status
+## Estado actual
 
-This repository is the **public architecture and product showcase** for Aegis Fusion. The implementation is evolving and selected core components remain private while the architecture, roadmap and engineering decisions are documented publicly.
+Este repositorio funciona como **presentación pública de arquitectura y producto**. La implementación continúa evolucionando y algunos componentes del núcleo permanecen privados mientras se documentan públicamente las decisiones técnicas principales.
 
-## What this demonstrates
+## Qué demuestra este proyecto
 
-This project is also a portfolio piece focused on:
+Aegis Fusion refleja experiencia práctica en:
 
-- endpoint security architecture;
-- systems programming;
-- secure distributed-system design;
-- observability and event pipelines;
-- explainable detection engineering;
-- cross-platform Windows/Linux integration;
-- product-oriented technical documentation.
+- arquitectura de seguridad para endpoints;
+- programación de sistemas;
+- diseño de sistemas distribuidos seguros;
+- observabilidad y procesamiento de eventos;
+- detección explicable;
+- integración Windows/Linux;
+- documentación técnica orientada a producto.
 
-## Collaboration
+## Colaboración
 
-Technical feedback, architecture discussions and security engineering collaboration are welcome through GitHub.
+Son bienvenidos los aportes técnicos, revisiones de arquitectura y conversaciones sobre ingeniería de seguridad a través de GitHub.
 
-Support links:
+Apoyo al proyecto:
 
 - [GitHub Sponsors](https://github.com/sponsors/dveronm21)
 - [Ko-fi](https://ko-fi.com/douglasveron)
 
-## License
+## Licencia
 
-Proprietary. Core source code and selected implementation components are not part of this public repository.
+Propietaria. El código fuente del núcleo y determinados componentes de implementación no forman parte de este repositorio público.
 
 ---
 
 <div align="center">
 
-**Built by [Douglas Verón](https://github.com/dveronm21)**
+**Desarrollado por [Douglas Verón](https://github.com/dveronm21)**
 
-*Infrastructure · Networking · Cybersecurity · Automation · Software Engineering*
+*Infraestructura · Redes · Ciberseguridad · Automatización · Ingeniería de software*
 
 </div>
